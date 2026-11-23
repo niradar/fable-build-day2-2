@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Untangle — fewer crossed wires</title>
+  <meta name="description" content="Untangle listens for misunderstandings in a conversation and helps clear them up.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%231f1b2d'/%3E%3Cpath d='M5 17c6 0 5-8 10-6s-3 10 2 10 3-9 10-6' fill='none' stroke='%23f6c453' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-mode="idle">
+  <a class="skip" href="#composerInput">Skip to typing</a>
+
+  <header class="top">
+    <div class="brand" aria-label="Untangle">
+      <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#1f1b2d"/><path d="M5 17c6 0 5-8 10-6s-3 10 2 10 3-9 10-6" fill="none" stroke="#f6c453" stroke-width="2.6" stroke-linecap="round"/></svg>
+      <span>untangle</span>
+    </div>
+
+    <div class="status" id="status" role="status" aria-live="polite">
+      <span class="status-dot" aria-hidden="true"></span>
+      <span id="statusText">Getting ready</span>
+      <span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    </div>
+
+    <nav class="actions" aria-label="Controls">
+      <button class="icon-btn" id="micBtn" aria-pressed="false" title="Microphone">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/><path class="slash" d="M4 4l16 16"/></svg>
+        <span id="micLabel">Mic off</span>
+      </button>
+      <button class="icon-btn" id="voiceBtn" aria-pressed="true" title="Mediator voice">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10H4Z"/><path class="waves" d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/><path class="slash" d="M4 4l16 16"/></svg>
+        <span id="voiceLabel">Voice on</span>
+      </button>
+      <button class="icon-btn" id="cuesBtn" aria-haspopup="dialog" title="Cues and settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>
+        <span>Cues</span>
+      </button>
+    </nav>
+  </header>
+
+  <div class="banner" id="banner" hidden></div>
+
+  <main class="app">
+    <section class="left">
+      <div class="card stage-card" id="stageCard">
+        <div class="stage-head">
+          <span class="eyebrow" id="stageEyebrow">All clear</span>
+          <span class="queue-chip" id="queueChip" hidden></span>
+        </div>
+        <svg id="stage" viewBox="0 0 640 290" role="img" aria-labelledby="stageDesc">
+          <desc id="stageDesc">Two friends connected by a string. When there is a misunderstanding the string is tangled and the message arrives scrambled.</desc>
+          <defs>
+            <filter id="soft" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#1f1b2d" flood-opacity=".12"/></filter>
+          </defs>
+          <ellipse cx="112" cy="252" rx="46" ry="7" fill="#1f1b2d" opacity=".08"/>
+          <ellipse cx="528" cy="252" rx="46" ry="7" fill="#1f1b2d" opacity=".08"/>
+
+          <path id="pathClean" class="string string-clean" d="M160 196 Q320 236 480 196"/>
+          <path id="pathKnot" class="string string-knot" d="M160 196 C215 196 232 128 286 150 C344 174 300 250 268 206 C236 160 330 104 366 150 C398 192 322 250 318 196 C314 140 398 120 410 170 C418 204 440 196 480 196"/>
+
+          <g class="ripples" aria-hidden="true"><circle cx="320" cy="190" r="30"/><circle cx="320" cy="190" r="30"/><circle cx="320" cy="190" r="30"/></g>
+
+          <g id="helper" class="helper" aria-hidden="true">
+            <ellipse class="wing wing-l" cx="-13" cy="-6" rx="9" ry="5"/>
+            <ellipse class="wing wing-r" cx="13" cy="-6" rx="9" ry="5"/>
+            <circle r="13" fill="#f6c453" stroke="#1f1b2d" stroke-width="2"/>
+            <circle cx="-4.5" cy="-2" r="1.8" fill="#1f1b2d"/><circle cx="4.5" cy="-2" r="1.8" fill="#1f1b2d"/>
+            <path d="M-4 4 Q0 8 4 4" fill="none" stroke="#1f1b2d" stroke-width="1.8" stroke-linecap="round"/>
+          </g>
+
+          <g class="buddy buddy-0" id="buddy0" transform="translate(112 196)">
+            <g class="bob">
+              <circle r="48" class="body" filter="url(#soft)"/>
+              <g class="eyes"><circle cx="-15" cy="-8" r="5"/><circle cx="15" cy="-8" r="5"/></g>
+              <path class="mouth" d="M-12 14 Q0 21 12 14"/>
+              <circle class="cheek" cx="-28" cy="8" r="6"/><circle class="cheek" cx="28" cy="8" r="6"/>
+            </g>
+            <text class="buddy-name" y="78" id="name0">Alex</text>
+          </g>
+          <g class="buddy buddy-1" id="buddy1" transform="translate(528 196)">
+            <g class="bob">
+              <circle r="48" class="body" filter="url(#soft)"/>
+              <g class="eyes"><circle cx="-15" cy="-8" r="5"/><circle cx="15" cy="-8" r="5"/></g>
+              <path class="mouth" d="M-12 14 Q0 21 12 14"/>
+              <circle class="cheek" cx="-28" cy="8" r="6"/><circle class="cheek" cx="28" cy="8" r="6"/>
+            </g>
+            <text class="buddy-name" y="78" id="name1">Sam</text>
+          </g>
+
+          <g class="bubble" id="bubble0" transform="translate(112 84)">
+            <rect x="-40" y="-34" width="80" height="58" rx="22"/><path class="tail" d="M-8 24 L0 38 L10 24"/><path class="cover" d="M-6 24 H8"/>
+            <text class="bubble-emoji" y="8"></text><text class="bubble-mark" x="27" y="-12"></text>
+          </g>
+          <g class="bubble" id="bubble1" transform="translate(528 84)">
+            <rect x="-40" y="-34" width="80" height="58" rx="22"/><path class="tail" d="M-8 24 L0 38 L10 24"/><path class="cover" d="M-6 24 H8"/>
+            <text class="bubble-emoji" y="8"></text><text class="bubble-mark" x="27" y="-12"></text>
+          </g>
+
+          <text id="token" class="token" aria-hidden="true"></text>
+          <g id="sparkles" class="sparkles" aria-hidden="true"></g>
+        </svg>
+        <p class="gap" id="gapLine" aria-live="polite"></p>
+      </div>
+
+      <div class="card panel" id="panel">
+        <ol class="steps" id="steps" aria-label="Mediation progress">
+          <li data-step="spot">Spotted</li>
+          <li data-step="ask">Clarifying</li>
+          <li data-step="confirm">Confirming</li>
+          <li data-step="explain">Explained</li>
+        </ol>
+        <div class="panel-body" aria-live="polite">
+          <p class="panel-label" id="panelLabel">Listening for crossed wires</p>
+          <p class="panel-say" id="panelSay"></p>
+          <p class="panel-hint" id="panelHint"></p>
+        </div>
+        <button class="ghost-btn" id="stepBackBtn" hidden>Step back</button>
+      </div>
+
+      <div id="resolvedFeed" class="resolved-feed" aria-label="Untangled moments"></div>
+    </section>
+
+    <section class="right card">
+      <div class="convo-head">
+        <h2>Conversation</h2>
+        <span class="count" id="resolvedCount"></span>
+      </div>
+      <div class="transcript" id="transcript" tabindex="0" role="log" aria-label="Live transcript">
+        <div class="empty" id="emptyState">
+          <p><strong>Just talk.</strong> Untangle stays quiet until it hears a cue like</p>
+          <p class="wake-quote" id="wakeQuote">“I don't understand”</p>
+          <p class="muted">No microphone? Type the conversation below instead.</p>
+        </div>
+      </div>
+      <div class="interim" id="interim" aria-hidden="true"></div>
+      <form class="composer" id="composer" autocomplete="off">
+        <div class="seg" role="radiogroup" aria-label="Who is speaking" id="speakerSeg"></div>
+        <input id="composerInput" type="text" placeholder="Type what was said…" aria-label="Type what was said" maxlength="400">
+        <button type="submit" class="send" aria-label="Send">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+        </button>
+      </form>
+    </section>
+  </main>
+
+  <!-- Welcome -->
+  <div class="overlay" id="welcome" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle" hidden>
+    <form class="welcome card" id="welcomeForm">
+      <div class="brand big"><svg viewBox="0 0 32 32" width="40" height="40" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#1f1b2d"/><path d="M5 17c6 0 5-8 10-6s-3 10 2 10 3-9 10-6" fill="none" stroke="#f6c453" stroke-width="2.6" stroke-linecap="round"/></svg><span>untangle</span></div>
+      <h1 id="welcomeTitle">Fewer crossed wires.</h1>
+      <p class="lede">Untangle listens quietly while you talk. When someone gets lost, it steps in, finds out what was really meant, and says it in words the other person will get.</p>
+      <div class="names">
+        <label><span class="dot dot-0"></span><span class="sr">First person's name</span><input id="nameA" maxlength="18" placeholder="Alex"></label>
+        <label><span class="dot dot-1"></span><span class="sr">Second person's name</span><input id="nameB" maxlength="18" placeholder="Sam"></label>
+      </div>
+      <button type="submit" class="primary" id="startBtn">Allow microphone &amp; start listening</button>
+      <button type="button" class="link" id="textOnlyBtn">Continue without a microphone — type instead</button>
+      <p class="fine" id="welcomeNote">Audio is transcribed by your browser's speech service. Only the few lines around a misunderstanding are sent to the AI mediator.</p>
+    </form>
+  </div>
+
+  <!-- Cues drawer -->
+  <div class="scrim" id="scrim" hidden></div>
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" hidden>
+    <div class="drawer-head">
+      <h2 id="drawerTitle">Cues &amp; settings</h2>
+      <button class="icon-only" id="drawerClose" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="drawer-body">
+      <section>
+        <h3>Wake phrase</h3>
+        <p class="muted">Always wakes Untangle, no matter what it has learned.</p>
+        <form id="wakeForm" class="row"><input id="wakeInput" maxlength="60" aria-label="Wake phrase"><button class="small-btn" type="submit">Save</button></form>
+      </section>
+      <section>
+        <h3>What I listen for</h3>
+        <p class="muted">Untangle learns new cues from real misunderstandings and retires the ones that keep causing false alarms. Everything is remembered on this device.</p>
+        <ul class="cue-list" id="cueList"></ul>
+        <form id="addCueForm" class="row"><input id="addCueInput" maxlength="60" placeholder="Add a phrase, e.g. “hang on, what?”" aria-label="New cue phrase"><button class="small-btn" type="submit">Add</button></form>
+      </section>
+      <section>
+        <h3>People</h3>
+        <p class="muted">Teach Untangle each voice (3 seconds of talking) so it can tell who is speaking. Best effort — tap a name in the transcript to correct it.</p>
+        <div id="people"></div>
+      </section>
+      <section>
+        <button class="ghost-btn danger" id="resetBtn">Forget everything I've learned</button>
+      </section>
+    </div>
+  </aside>
+
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+  <script src="app.js" type="module"></script>
+</body>
+</html>

@@ -5,11 +5,32 @@ misunderstanding cue ("I don't understand", "that's not what I meant", a raised 
 asks the misunderstood person a few pointed questions, confirms what they meant, and explains it to
 the other person in terms they will get.
 
+## Install
+
+You need:
+
+- **Node.js 20.12 or newer** (`node --version` to check) — get it from [nodejs.org](https://nodejs.org)
+  or with a version manager such as `nvm`.
+- **Chrome or Edge** — they provide the built-in speech recognition the voice mode relies on.
+- An **Anthropic API key** for the AI mediator (optional — see below). Create one at
+  [console.anthropic.com](https://console.anthropic.com).
+
+Then:
+
+```bash
+git clone https://github.com/niradar/fable-build-day2-2.git
+cd fable-build-day2-2
+npm install
+cp .env.example .env
+```
+
+Open `.env` and set `ANTHROPIC_API_KEY=` to your key (or export it in your shell instead). The same
+file takes two optional settings: `UNTANGLE_MODEL` to change the Claude model and `PORT` to change
+the port (default `4747`).
+
 ## Run it
 
 ```bash
-npm install
-cp .env.example .env      # then put your ANTHROPIC_API_KEY in .env (or export it in your shell)
 npm start                 # → http://localhost:4747
 ```
 
